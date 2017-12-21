@@ -10,31 +10,49 @@ public class BuilderEditor : Editor
     SerializedProperty width;
     SerializedProperty length;
     SerializedProperty height;
+    SerializedProperty width_unit;
+    SerializedProperty length_unit;
+    SerializedProperty height_unit;
     private void OnEnable()
     {
         width = serializedObject.FindProperty("width");
         height = serializedObject.FindProperty("height");
         length = serializedObject.FindProperty("length");
+        width_unit = serializedObject.FindProperty("width_unit");
+        length_unit = serializedObject.FindProperty("length_unit");
+        height_unit = serializedObject.FindProperty("height_unit");
     }
     
     public override void OnInspectorGUI() {
         serializedObject.Update();
         procedural_mesh myScript = (procedural_mesh)target;
-        EditorGUILayout.IntSlider(width, 1, 10,new GUILayoutOption[] {GUILayout.Height(20), GUILayout.ExpandHeight(false) });
-        if (!width.hasMultipleDifferentValues)
+        if(GUILayout.Button("Place Props"))
         {
-            myScript.BuildObject();
+            myScript.PlaceProps();
         }
-        EditorGUILayout.IntSlider(height, 1, 10, new GUILayoutOption[] { GUILayout.Height(20), GUILayout.ExpandHeight(false) });
-        if (!height.hasMultipleDifferentValues)
+        if (GUILayout.Button("Remove Props"))
         {
-            myScript.BuildObject();
+            myScript.RemoveProps();
         }
-        EditorGUILayout.IntSlider(length, 1, 10, new GUILayoutOption[] { GUILayout.Height(20), GUILayout.ExpandHeight(false) });
-        if (!length.hasMultipleDifferentValues)
+        using (var check = new EditorGUI.ChangeCheckScope())
         {
-            myScript.BuildObject();
+            // Block of code with controls
+            // that may set GUI.changed to true
+            
+            EditorGUILayout.IntSlider(width, 1, 10, new GUILayoutOption[] { GUILayout.Height(20), GUILayout.ExpandHeight(false) });
+            EditorGUILayout.IntSlider(height, 1, 10, new GUILayoutOption[] { GUILayout.Height(20), GUILayout.ExpandHeight(false) });
+            EditorGUILayout.IntSlider(length, 1, 10, new GUILayoutOption[] { GUILayout.Height(20), GUILayout.ExpandHeight(false) });
+            EditorGUILayout.Slider(width_unit, 1, 5, new GUILayoutOption[] { GUILayout.Height(20), GUILayout.ExpandHeight(false) });
+            EditorGUILayout.Slider(length_unit, 1, 5, new GUILayoutOption[] { GUILayout.Height(20), GUILayout.ExpandHeight(false) });
+            EditorGUILayout.Slider(height_unit, 1, 5, new GUILayoutOption[] { GUILayout.Height(20), GUILayout.ExpandHeight(false) });
+            if (check.changed)
+            {
+                myScript.BuildObject();
+                // Code to execute if GUI.changed
+                // was set to true inside the block of code above.
+            }
+            serializedObject.ApplyModifiedProperties();
         }
-        serializedObject.ApplyModifiedProperties();
+        DrawDefaultInspector();
     }
 }
